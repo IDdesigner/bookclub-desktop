@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 
 interface AuthFormData {
@@ -8,6 +9,7 @@ interface AuthFormData {
 }
 
 export default function AuthForm() {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
@@ -38,10 +40,8 @@ export default function AuthForm() {
 
         if (error) throw error;
 
-        setMessage({
-          type: 'success',
-          text: 'Logged in successfully!',
-        });
+        // Redirect to dashboard after successful login
+        navigate('/classes');
       }
     } catch (error: any) {
       setMessage({

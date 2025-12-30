@@ -5,9 +5,8 @@ interface StudentRosterProps {
 }
 
 export default function StudentRoster({ classId }: StudentRosterProps) {
-  const { classes } = useClassStore();
-  const classData = classes.find((c) => c.id === classId);
-  const students = classData?.students || [];
+  const { selectedClass } = useClassStore();
+  const students = selectedClass?.students || [];
 
   return (
     <div className="bg-white rounded-lg shadow">

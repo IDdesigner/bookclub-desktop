@@ -106,9 +106,12 @@ export const useClassStore = create<ClassStore>((set, get) => ({
         `)
         .eq('class_id', classId);
 
-      if (studentsError) throw studentsError;
+      if (studentsError) {
+        console.error('Students error:', studentsError);
+        throw studentsError;
+      }
 
-      const students = classStudents?.map((cs: any) => cs.students) || [];
+      const students = classStudents?.map((cs: any) => cs.students).filter(Boolean) || [];
 
       const classWithStudents = {
         ...classData,
