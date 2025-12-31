@@ -159,7 +159,7 @@ export default function CreateAssignmentModal({
 
       if (assignment) {
         // Update existing assignment
-        await updateAssignment(assignment.id, assignmentData, rubricsData, data.selectedStudents);
+        await updateAssignment(assignment.id, { ...assignmentData, status }, rubricsData, data.selectedStudents);
       } else {
         // Create new assignment
         await createAssignment(assignmentData, rubricsData, data.selectedStudents, status);

@@ -10,10 +10,9 @@ interface AssignmentsListProps {
 export default function AssignmentsList({ classId }: AssignmentsListProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingAssignment, setEditingAssignment] = useState<any>(null);
-  const { classes } = useClassStore();
-  const { assignments, fetchAssignments, publishAssignment, isLoading } = useAssignmentStore();
-  const classData = classes.find(c => c.id === classId);
-  const students = classData?.students || [];
+  const { selectedClass } = useClassStore();
+  const { assignments, fetchAssignments, publishAssignment, unpublishAssignment, isLoading } = useAssignmentStore();
+  const students = selectedClass?.students || [];
 
   useEffect(() => {
     fetchAssignments(classId);
@@ -25,6 +24,16 @@ export default function AssignmentsList({ classId }: AssignmentsListProps) {
         await publishAssignment(assignmentId);
       } catch (error) {
         console.error('Failed to publish assignment:', error);
+      }
+    }
+  };
+
+  const handleUnpublish = async (assignmentId: string) => {
+    if (confirm('Are you sure you want to unpublish this assignment? Students will no longer be able to see it.')) {
+      try {
+        await unpublishAssignment(assignmentId);
+      } catch (error) {
+        console.error('Failed to unpublish assignment:', error);
       }
     }
   };
@@ -114,12 +123,19 @@ export default function AssignmentsList({ classId }: AssignmentsListProps) {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {assignment.status === 'draft' && (
+                    {assignment.status === 'draft' ? (
                       <button
                         onClick={() => handlePublish(assignment.id)}
                         className="px-3 py-1.5 text-sm bg-green-600 text-white rounded hover:bg-green-700"
                       >
                         Publish
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleUnpublish(assignment.id)}
+                        className="px-3 py-1.5 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                      >
+                        Unpublish
                       </button>
                     )}
                     <button

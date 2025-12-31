@@ -49,6 +49,7 @@ interface AssignmentStore {
   createAssignment: (assignmentData: Partial<Assignment>, rubrics: Omit<Rubric, 'id' | 'assignment_id'>[], studentIds: string[], status: 'draft' | 'published') => Promise<string>;
   updateAssignment: (assignmentId: string, assignmentData: Partial<Assignment>, rubrics: Omit<Rubric, 'assignment_id'>[], studentIds: string[]) => Promise<void>;
   publishAssignment: (assignmentId: string) => Promise<void>;
+  unpublishAssignment: (assignmentId: string) => Promise<void>;
   deleteAssignment: (assignmentId: string) => Promise<void>;
 }
 
@@ -242,6 +243,32 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
       set((state) => ({
         assignments: state.assignments.map(a =>
           a.id === assignmentId ? { ...a, status: 'published' as const } : a
+        ),
+        isLoading: false,
+      }));
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
+      throw error;
+    }
+  },
+
+  unpublishAssignment: async (assignmentId: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const { error } = await supabase
+        .from('assignments')
+        .update({
+          status: 'draft',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', assignmentId);
+
+      if (error) throw error;
+
+      // Update local state
+      set((state) => ({
+        assignments: state.assignments.map(a =>
+          a.id === assignmentId ? { ...a, status: 'draft' as const } : a
         ),
         isLoading: false,
       }));
