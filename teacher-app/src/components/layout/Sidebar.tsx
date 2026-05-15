@@ -1,6 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../hooks/useAuth';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: '📊' },
@@ -12,7 +11,6 @@ const navigation = [
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -23,9 +21,6 @@ export default function Sidebar() {
     <div className="w-64 bg-gray-900 min-h-screen text-white flex flex-col">
       <div className="p-6">
         <h1 className="text-2xl font-bold">Book Club</h1>
-        {user?.email && (
-          <p className="text-xs text-gray-400 mt-2 truncate">{user.email}</p>
-        )}
       </div>
       <nav className="mt-6 flex-1">
         {navigation.map((item) => {
